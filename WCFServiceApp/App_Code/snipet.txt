@@ -1,0 +1,32 @@
+                    //Initialize Web Request
+                    var request = (HttpWebRequest)WebRequest.Create(Constants.ShipmentAPI);
+                    //Set Request Headers
+                    request.Method = Constants.Post;
+                    request.MediaType = Constants.AppJson;
+                    request.ContentType = Constants.AppJson;
+                    request.Accept = Constants.AppJson;
+                    request.Headers[HttpRequestHeader.Authorization] = $"Key={APIKey}";
+
+
+
+String JsonString = JsonConvert.SerializeObject(SalesOrderObject);
+
+//Connect to API and write data
+using (var requestStream = request.GetRequestStream())
+{
+    Byte[] byteArray = Encoding.UTF8.GetBytes(JsonString);
+    requestStream.Write(byteArray, 0, byteArray.Length);
+    requestStream.Close();
+}
+
+//Reed response from API
+using (WebResponse response = request.GetResponse())
+{
+    using (var dataStream = response.GetResponseStream())
+    {
+        using (StreamReader reader = new StreamReader(dataStream))
+        {
+            responseFromServer = reader.ReadToEnd();
+        }
+    }
+}
